@@ -1,0 +1,20 @@
+{
+  "name": "lib0-typescript",
+  "version": "1.0.0",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean ; tsc",
+    "push": "npm run build ; git add .; git commit -m commit; git push"
+  },
+  "dependencies": {
+    "jest": "^29.5.0",
+    "lib0": "^0.2.63"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.6"
+  }
+}
