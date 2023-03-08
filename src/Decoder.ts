@@ -1,5 +1,3 @@
-import * as buffer from "lib0/buffer"
-
 import { Codable } from "./Encoder"
 
 const errorIntegerOutOfRange = new Error('Integer out of Range')
