@@ -1,2 +1,2 @@
-export * from "./Decoder"
-export * from "./Encoder"
+export * from "./Coding/Decoder"
+export * from "./Coding/Encoder"
