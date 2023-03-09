@@ -2,6 +2,7 @@ import { Encoder } from "./Encoder"
 import { Decoder } from "./Decoder"
 
 import * as encoding from "lib0/encoding"
+import { encode } from "punycode"
 
 describe("Encoder.ts", () => {
     test("writeのデコード内容の比較", () => {
@@ -139,6 +140,7 @@ describe("Decoder.ts", () => {
         encoder.writeVarInt(9)
         encoder.writeVarInt(12222)
         encoder.writeVarInt(12761287)
+        
         const decoder = new Decoder(encoder.toUint8Array()) 
         
         expect(decoder.readVarInt()).toBe(9)
@@ -151,12 +153,24 @@ describe("Decoder.ts", () => {
         encoder.writeVarString("Hello")
         encoder.writeVarString("World")
         encoder.writeVarString("Encoder")
+
         const decoder = new Decoder(encoder.toUint8Array()) 
         
         expect(decoder.readVarString()).toBe("Hello")
         expect(decoder.readVarString()).toBe("World")
         expect(decoder.readVarString()).toBe("Encoder")
     })
+
+    test("floatの比較", () => {
+        const encoder = new Encoder()
+        encoder.writeFloat32(3.14)
+        
+        console.log(encoder.toUint8Array())
+        const decoder = new Decoder(encoder.toUint8Array()) 
+        
+        expect(decoder.readFloat32() - 3.14).toBeLessThanOrEqual(0.0001)
+    })
+
 
     test("anyの比較", () => {
         const encoder = new Encoder()

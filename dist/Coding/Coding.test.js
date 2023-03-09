@@ -166,6 +166,13 @@ describe("Decoder.ts", () => {
         expect(decoder.readVarString()).toBe("World");
         expect(decoder.readVarString()).toBe("Encoder");
     });
+    test("floatの比較", () => {
+        const encoder = new Encoder_1.Encoder();
+        encoder.writeFloat32(3.14);
+        console.log(encoder.toUint8Array());
+        const decoder = new Decoder_1.Decoder(encoder.toUint8Array());
+        expect(decoder.readFloat32() - 3.14).toBeLessThanOrEqual(0.0001);
+    });
     test("anyの比較", () => {
         const encoder = new Encoder_1.Encoder();
         encoder.writeAny({
