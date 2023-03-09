@@ -10,9 +10,9 @@ export declare class Encoder {
     private static _maxStrBSize;
     private static _floatTestBed;
     private static _textEncoder;
-    position: number;
     buffers: Uint8Array[];
     currentBuffer: Uint8Array;
+    currentBufferPosition: number;
     /** The current length of the encoded data. */
     get length(): number;
     /** Transform to Uint8Array. */
@@ -21,7 +21,7 @@ export declare class Encoder {
      * Verify that it is possible to write `len` bytes wtihout checking. If
      * necessary, a new Buffer with the required length is attached.
      */
-    verifyLen(length: number): void;
+    reserveLen(length: number): void;
     /**
      * Write one byte to the encoder.
      */
@@ -115,5 +115,5 @@ export declare class Encoder {
      * @param {} data
      */
     writeAny(data: Codable): void;
-    private isNegativeZero;
+    private isNegative;
 }

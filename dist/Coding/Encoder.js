@@ -4,9 +4,9 @@ exports.Encoder = void 0;
 /** A BinaryEncoder handles the encoding to an Uint8Array. */
 class Encoder {
     constructor() {
-        this.position = 0;
         this.buffers = [];
         this.currentBuffer = new Uint8Array(100);
+        this.currentBufferPosition = 0;
         /** Write one byte as an unsigned integer. */
         this.writeUint8 = this.write;
         /** Write one byte as an unsigned Integer at a specific location. */
@@ -14,7 +14,7 @@ class Encoder {
     }
     /** The current length of the encoded data. */
     get length() {
-        let len = this.position;
+        let len = this.currentBufferPosition;
         for (const buffer of this.buffers) {
             len += buffer.length;
         }
@@ -24,24 +24,23 @@ class Encoder {
     toUint8Array() {
         const uint8array = new Uint8Array(this.length);
         let cursor = 0;
-        for (let i = 0; i < this.buffers.length; i++) {
-            const data = this.buffers[i];
-            uint8array.set(data, cursor);
-            cursor += data.length;
+        for (const buffer of this.buffers) {
+            uint8array.set(buffer, cursor);
+            cursor += buffer.length;
         }
-        uint8array.set(new Uint8Array(this.currentBuffer.buffer, 0, this.position));
+        uint8array.set(new Uint8Array(this.currentBuffer.buffer, 0, this.currentBufferPosition));
         return uint8array;
     }
     /**
      * Verify that it is possible to write `len` bytes wtihout checking. If
      * necessary, a new Buffer with the required length is attached.
      */
-    verifyLen(length) {
+    reserveLen(length) {
         const bufferLength = this.currentBuffer.length;
-        if (bufferLength - this.position < length) {
-            this.buffers.push(new Uint8Array(this.currentBuffer.buffer, 0, this.position));
+        if (bufferLength - this.currentBufferPosition < length) {
+            this.buffers.push(new Uint8Array(this.currentBuffer.buffer, 0, this.currentBufferPosition));
             this.currentBuffer = new Uint8Array(Math.max(bufferLength, length) * 2);
-            this.position = 0;
+            this.currentBufferPosition = 0;
         }
     }
     /**
@@ -49,13 +48,13 @@ class Encoder {
      */
     write(value) {
         const bufferLen = this.currentBuffer.length;
-        if (this.position === bufferLen) {
+        if (this.currentBufferPosition === bufferLen) {
             this.buffers.push(this.currentBuffer);
             this.currentBuffer = new Uint8Array(bufferLen * 2);
-            this.position = 0;
+            this.currentBufferPosition = 0;
         }
-        this.currentBuffer[this.position] = value;
-        this.position += 1;
+        this.currentBuffer[this.currentBufferPosition] = value;
+        this.currentBufferPosition += 1;
     }
     /**
      * Write one byte at a specific position.
@@ -120,16 +119,17 @@ class Encoder {
     }
     /** Write a variable length integer. */
     writeVarInt(value) {
-        const isNegative = this.isNegativeZero(value);
+        const isNegative = this.isNegative(value);
         if (isNegative) {
             value = -value;
         }
-        //         |- whether to continue reading           |- whether is negative           |- number
-        this.write((value > 32 ? 128 : 0) | (isNegative ? 64 : 0) | (32 & value));
+        //        |- whether to continue reading (8th bit) |- whether is negative (7th bit) |- number (bottom 6bits)
+        this.write((value > 63 ? 128 : 0) | (isNegative ? 64 : 0) | (63 & value));
         value = Math.floor(value / 64); // shift >>> 6
         // We don't need to consider the case of num === 0 so we can use a different
         // pattern here than above.
         while (value > 0) {
+            //        |- whether to continue reading (8th bit) |- number (bottom 7bits)
             this.write((value > 127 ? 128 : 0) | (127 & value));
             value = Math.floor(value / 128); // shift >>> 7
         }
@@ -155,11 +155,11 @@ class Encoder {
     /** Append fixed-length Uint8Array to the encoder. */
     writeUint8Array(uint8Array) {
         const bufferLen = this.currentBuffer.length;
-        const cpos = this.position;
+        const cpos = this.currentBufferPosition;
         const leftCopyLen = Math.min(bufferLen - cpos, uint8Array.length);
         const rightCopyLen = uint8Array.length - leftCopyLen;
         this.currentBuffer.set(uint8Array.subarray(0, leftCopyLen), cpos);
-        this.position += leftCopyLen;
+        this.currentBufferPosition += leftCopyLen;
         if (rightCopyLen > 0) {
             // Still something to write, write right half..
             // Append new buffer
@@ -168,7 +168,7 @@ class Encoder {
             this.currentBuffer = new Uint8Array(Math.max(bufferLen * 2, rightCopyLen));
             // copy array
             this.currentBuffer.set(uint8Array.subarray(leftCopyLen));
-            this.position = rightCopyLen;
+            this.currentBufferPosition = rightCopyLen;
         }
     }
     /** Append an Uint8Array to Encoder. */
@@ -190,9 +190,9 @@ class Encoder {
      * ```
      */
     writeOnDataView(len) {
-        this.verifyLen(len);
-        const dview = new DataView(this.currentBuffer.buffer, this.position, len);
-        this.position += len;
+        this.reserveLen(len);
+        const dview = new DataView(this.currentBuffer.buffer, this.currentBufferPosition, len);
+        this.currentBufferPosition += len;
         return dview;
     }
     writeFloat32(value) {
@@ -317,7 +317,7 @@ class Encoder {
                 this.write(127);
         }
     }
-    isNegativeZero(n) {
+    isNegative(n) {
         if (n !== 0) {
             return n < 0;
         }
