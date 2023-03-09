@@ -2,8 +2,6 @@ import { Encoder } from "./Encoder"
 import { Decoder } from "./Decoder"
 
 import * as encoding from "lib0/encoding"
-import * as decoding from "lib0/decoding"
-import { decode } from "punycode"
 
 function Uint8Array_equals(data1: Uint8Array, data2: Uint8Array): boolean {
     if (data1.length != data2.length) return false
