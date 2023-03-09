@@ -17,3 +17,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./Coding/Decoder"), exports);
 __exportStar(require("./Coding/Encoder"), exports);
 __exportStar(require("./Observable/Observable"), exports);
+__exportStar(require("./Utility/isEqual"), exports);
