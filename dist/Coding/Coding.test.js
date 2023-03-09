@@ -26,15 +26,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Encoder_1 = require("./Encoder");
 const Decoder_1 = require("./Decoder");
 const encoding = __importStar(require("lib0/encoding"));
-function Uint8Array_equals(data1, data2) {
-    if (data1.length != data2.length)
-        return false;
-    for (let i = 0; i < data1.length; i++) {
-        if (data1[i] != data2[i])
-            return false;
-    }
-    return true;
-}
 describe("Encoder.ts", () => {
     test("writeのデコード内容の比較", () => {
         const d1 = () => {

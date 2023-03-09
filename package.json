@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean ; tsc",
-    "push": "npm run build ; git add .; git commit -m commit; git push"
+    "push": "make(){ npm run build; git add .; git commit -m \"$@\"; git push; }; make "
   },
   "dependencies": {
     "jest": "^29.5.0",
