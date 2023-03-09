@@ -8,7 +8,8 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean ; tsc",
-    "push": "make(){ if [[ -z \"$@\" ]]; then echo Commit message should not be empty. ;exit 1; fi; npm run build; git add .; git commit -m \"$@\"; git push; }; make "
+    "push": "make(){ if [[ -z \"$@\" ]]; then echo Commit message should not be empty. ;exit 1; fi; npm run build; git add .; git commit -m \"$@\"; git push; }; make ",
+    "sample": "_do(){ git commit -m \"$@\"; }; _do"
   },
   "dependencies": {
     "jest": "^29.5.0",
