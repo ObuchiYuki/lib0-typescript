@@ -2,29 +2,26 @@
 import * as map from 'lib0/map.js'
 import * as array from 'lib0/array.js'
 
-/** Handles named events. */
-type Observer = (...values: unknown[]) => void
-
-export class Observable<EventType = string> {
-    private _observers: Map<EventType, Set<Observer>> = new Map()
+export class Observable<EventType extends { [Key: string]: readonly unknown[] }> {
+    private _observers: Map<keyof EventType, Set<any>> = new Map()
 
     constructor() {}
 
-    on(name: EventType, observer: Observer) {
+    on<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void) {
         if (this._observers.get(name) == null) this._observers.set(name, new Set())
 
         this._observers.get(name)?.add(observer)
     }
 
-    once(name: EventType, observer: Observer) {
-        const _observer = (...args: unknown[]) => {
+    once<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void) {
+        const _observer = (...args: EventType[Name]) => {
             this.off(name, _observer)
             observer(...args)
         }
         this.on(name, _observer)
     }
 
-    off(name: EventType, observer: Observer) {
+    off<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void) {
         const observers = this._observers.get(name)
         if (observers !== undefined) {
             observers.delete(observer)
@@ -38,7 +35,7 @@ export class Observable<EventType = string> {
      * Emit a named event. All registered event listeners that listen to the
      * specified name will receive the event.
      */
-    emit(name: EventType, args: unknown[]) {
+    emit<T extends keyof EventType>(name: T, args: EventType[T]) {
         // copy all listeners to an array first to make sure that no event is emitted to listeners that are subscribed while the event handler is called.
         const listeners = this._observers.get(name)
         if (listeners == null) return

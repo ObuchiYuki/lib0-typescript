@@ -1,4 +1,4 @@
-export type Codable = undefined|null|number|bigint|boolean|string|{ [Key in string]: Codable }|Codable[]|Uint8Array
+export type Codable = undefined|null|number|bigint|boolean|string|{ [Key: string]: Codable }|Codable[]|Uint8Array
 
 /** A BinaryEncoder handles the encoding to an Uint8Array. */
 export class Encoder {
@@ -274,8 +274,7 @@ export class Encoder {
      * [31-127] the end of the data range is used for data encoding by
      *          lib0/encoding.js
      *
-     * @param {Encoder} encoder
-     * @param {} data
+     * @param {Codable} data
      */
     writeAny(data: Codable) {
         switch (typeof data) {
