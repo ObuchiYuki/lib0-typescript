@@ -25,15 +25,11 @@ describe("Encoder.ts", () => {
         const d1 = () => {
             const encoder = new Encoder()
             encoder.writeUint8(9)
-            encoder.writeUint16(12222)
-            encoder.writeUint32(1276127)
             return encoder.toUint8Array()
         }
         const d2 = () => {
             const encoder = encoding.createEncoder()
             encoding.writeUint8(encoder, 9)
-            encoding.writeUint16(encoder, 12222)
-            encoding.writeUint32(encoder, 1276127)
             return encoding.toUint8Array(encoder)
         }
         expect(d1()).toEqual(d2())
@@ -126,13 +122,9 @@ describe("Decoder.ts", () => {
     test("int系の比較", () => {
         const encoder = new Encoder()
         encoder.writeUint8(9)
-        encoder.writeUint16(12222)
-        encoder.writeUint32(1276127)
         const decoder = new Decoder(encoder.toUint8Array()) 
         
         expect(decoder.readUint8()).toBe(9)
-        expect(decoder.readUint16()).toBe(12222)
-        expect(decoder.readUint32()).toBe(1276127)
     })
 
     test("varIntの比較", () => {

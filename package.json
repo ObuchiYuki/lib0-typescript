@@ -7,8 +7,8 @@
     "main": "dist/index.js",
     "scripts": {
         "clean": "rm -rf dist",
-        "build": "npm run clean ; tsc",
-        "push": "make(){ if [[ -z \"$1\" ]]; then echo Commit message should not be empty. ;exit 1; fi; npm run build; git add .; git commit -m \"$1\"; git push; }; make "
+        "build": "npm run clean && tsc",
+        "push": "make(){ if [[ -z \"$1\" ]]; then echo Commit message should not be empty. ;exit 1; fi; npm run build && git add . && git commit -m \"$1\"; git push; }; make "
     },
     "dependencies": {
         "jest": "^29.5.0",
