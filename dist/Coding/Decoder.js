@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Decoder = void 0;
+exports.StringDecoder = exports.IntDiffOptRleDecoder = exports.IncUintOptRleDecoder = exports.UintOptRleDecoder = exports.RleIntDiffDecoder = exports.IntDiffDecoder = exports.RleDecoder = exports.Decoder = void 0;
+const isNegative_1 = require("./isNegative");
 const errorIntegerOutOfRange = new Error('Integer out of Range');
 const errorUnexpectedEndOfArray = new Error('Unexpected end of array');
 /** A Decoder handles the decoding of an Uint8Array.*/
@@ -275,3 +276,137 @@ class Decoder {
 }
 exports.Decoder = Decoder;
 Decoder._decoder = new TextDecoder();
+class RleDecoder extends Decoder {
+    constructor(uint8Array, reader) {
+        super(uint8Array);
+        this.state = null;
+        this.count = 0;
+        this.reader = reader;
+    }
+    read() {
+        if (this.count === 0) {
+            this.state = this.reader(this);
+            if (this.hasContent()) {
+                this.count = this.readVarUint() + 1; // see encoder implementation for the reason why this is incremented
+            }
+            else {
+                this.count = -1; // read the current value forever
+            }
+        }
+        this.count--;
+        return this.state;
+    }
+}
+exports.RleDecoder = RleDecoder;
+class IntDiffDecoder extends Decoder {
+    constructor(uint8Array, start) {
+        super(uint8Array);
+        this.state = start;
+    }
+    read() {
+        this.state += this.readVarInt();
+        return this.state;
+    }
+}
+exports.IntDiffDecoder = IntDiffDecoder;
+class RleIntDiffDecoder extends Decoder {
+    constructor(uint8Array, start) {
+        super(uint8Array);
+        this.state = start;
+        this.count = 0;
+    }
+    read() {
+        if (this.count === 0) {
+            this.state += this.readVarInt();
+            if (this.hasContent()) {
+                this.count = this.readVarUint() + 1; // see encoder implementation for the reason why this is incremented
+            }
+            else {
+                this.count = -1; // read the current value forever
+            }
+        }
+        this.count--;
+        return this.state;
+    }
+}
+exports.RleIntDiffDecoder = RleIntDiffDecoder;
+class UintOptRleDecoder extends Decoder {
+    constructor(uint8Array) {
+        super(uint8Array);
+        this.state = 0;
+        this.count = 0;
+    }
+    read() {
+        if (this.count === 0) {
+            this.state = this.readVarInt();
+            // if the sign is negative, we read the count too, otherwise count is 1
+            this.count = 1;
+            if ((0, isNegative_1.isNegative)(this.state)) {
+                this.state = -this.state;
+                this.count = this.readVarUint() + 2;
+            }
+        }
+        this.count--;
+        return this.state;
+    }
+}
+exports.UintOptRleDecoder = UintOptRleDecoder;
+class IncUintOptRleDecoder extends Decoder {
+    constructor(uint8Array) {
+        super(uint8Array);
+        this.state = 0;
+        this.count = 0;
+    }
+    read() {
+        if (this.count === 0) {
+            this.state = this.readVarInt();
+            // if the sign is negative, we read the count too, otherwise count is 1
+            this.count = 1;
+            if ((0, isNegative_1.isNegative)(this.state)) {
+                this.state = -this.state;
+                this.count = this.readVarUint() + 2;
+            }
+        }
+        this.count--;
+        return this.state++;
+    }
+}
+exports.IncUintOptRleDecoder = IncUintOptRleDecoder;
+class IntDiffOptRleDecoder extends Decoder {
+    constructor(uint8Array) {
+        super(uint8Array);
+        this.state = 0;
+        this.count = 0;
+        this.diff = 0;
+    }
+    read() {
+        if (this.count === 0) {
+            const diff = this.readVarInt();
+            // if the first bit is set, we read more data
+            const hasCount = diff & 1;
+            this.diff = Math.floor(diff / 2); // shift >> 1
+            this.count = 1;
+            if (hasCount) {
+                this.count = this.readVarUint() + 2;
+            }
+        }
+        this.state += this.diff;
+        this.count--;
+        return this.state;
+    }
+}
+exports.IntDiffOptRleDecoder = IntDiffOptRleDecoder;
+class StringDecoder {
+    constructor(uint8Array) {
+        this.spos = 0;
+        this.decoder = new UintOptRleDecoder(uint8Array);
+        this.str = this.decoder.readVarString();
+    }
+    read() {
+        const end = this.spos + this.decoder.read();
+        const res = this.str.slice(this.spos, end);
+        this.spos = end;
+        return res;
+    }
+}
+exports.StringDecoder = StringDecoder;

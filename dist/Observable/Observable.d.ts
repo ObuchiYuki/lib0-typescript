@@ -1,16 +1,15 @@
-/** Handles named events. */
-type Observer = (...values: unknown[]) => void;
-export declare class Observable<EventType = string> {
+export declare class Observable<EventType extends {
+    [Key: string]: readonly unknown[];
+}> {
     private _observers;
     constructor();
-    on(name: EventType, observer: Observer): void;
-    once(name: EventType, observer: Observer): void;
-    off(name: EventType, observer: Observer): void;
+    on<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
+    once<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
+    off<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
     /**
      * Emit a named event. All registered event listeners that listen to the
      * specified name will receive the event.
      */
-    emit(name: EventType, args: unknown[]): void;
+    emit<T extends keyof EventType>(name: T, args: EventType[T]): void;
     destroy(): void;
 }
-export {};

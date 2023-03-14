@@ -103,3 +103,47 @@ export declare class Decoder {
     readBigUint64(): bigint;
     readAny(): Codable;
 }
+export declare class RleDecoder<T extends number> extends Decoder {
+    reader: (decoder: Decoder) => T;
+    state: T | null;
+    count: number;
+    constructor(uint8Array: Uint8Array, reader: (decoder: Decoder) => T);
+    read(): T;
+}
+export declare class IntDiffDecoder extends Decoder {
+    state: number;
+    constructor(uint8Array: Uint8Array, start: number);
+    read(): number;
+}
+export declare class RleIntDiffDecoder extends Decoder {
+    state: number;
+    count: number;
+    constructor(uint8Array: Uint8Array, start: number);
+    read(): number;
+}
+export declare class UintOptRleDecoder extends Decoder {
+    state: number;
+    count: number;
+    constructor(uint8Array: Uint8Array);
+    read(): number;
+}
+export declare class IncUintOptRleDecoder extends Decoder {
+    state: number;
+    count: number;
+    constructor(uint8Array: Uint8Array);
+    read(): number;
+}
+export declare class IntDiffOptRleDecoder extends Decoder {
+    state: number;
+    count: number;
+    diff: number;
+    constructor(uint8Array: Uint8Array);
+    read(): number;
+}
+export declare class StringDecoder {
+    decoder: UintOptRleDecoder;
+    str: string;
+    spos: number;
+    constructor(uint8Array: Uint8Array);
+    read(): string;
+}
