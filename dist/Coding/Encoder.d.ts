@@ -25,7 +25,7 @@ export declare class Encoder {
     /**
      * Write one byte to the encoder.
      */
-    write(value: number): void;
+    write1(value: number): void;
     /**
      * Write one byte at a specific position.
      * Position must already be written (i.e. encoder.length > pos)
