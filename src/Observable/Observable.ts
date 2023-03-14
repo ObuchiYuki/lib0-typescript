@@ -31,6 +31,10 @@ export class Observable<EventType extends { [Key: string]: readonly unknown[] }>
         }
     }
 
+    isObserving<Name extends keyof EventType>(name: Name): boolean {
+        return this._observers.has(name)
+    }
+
     /**
      * Emit a named event. All registered event listeners that listen to the
      * specified name will receive the event.

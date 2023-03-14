@@ -6,6 +6,7 @@ export declare class Observable<EventType extends {
     on<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
     once<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
     off<Name extends keyof EventType>(name: Name, observer: (..._: EventType[Name]) => void): void;
+    isObserving<Name extends keyof EventType>(name: Name): boolean;
     /**
      * Emit a named event. All registered event listeners that listen to the
      * specified name will receive the event.

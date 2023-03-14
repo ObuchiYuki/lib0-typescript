@@ -27,6 +27,9 @@ class Observable {
             }
         }
     }
+    isObserving(name) {
+        return this._observers.has(name);
+    }
     /**
      * Emit a named event. All registered event listeners that listen to the
      * specified name will receive the event.
