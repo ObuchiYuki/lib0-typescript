@@ -20,5 +20,5 @@ __exportStar(require("./Observable/Observable"), exports);
 __exportStar(require("./Utility/isEqual"), exports);
 __exportStar(require("./Utility/binary"), exports);
 __exportStar(require("./Utility/iterator"), exports);
-__exportStar(require("./Utility/setIfUndefined"), exports);
+__exportStar(require("./Utility/map"), exports);
 __exportStar(require("./Utility/Error"), exports);
