@@ -2,7 +2,10 @@ export const mapIterator = <T, R>(iterator: Iterator<T>, body: (value: T) => R):
     [Symbol.iterator]() { return this },
     next(): IteratorResult<R> {
         const { done, value } = iterator.next()
-        return { value: body(value), done: done  }
+        return { 
+            value: done ? undefined as any : body(value), 
+            done: done  
+        }
     }
 })
 

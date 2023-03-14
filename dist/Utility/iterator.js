@@ -5,7 +5,10 @@ const mapIterator = (iterator, body) => ({
     [Symbol.iterator]() { return this; },
     next() {
         const { done, value } = iterator.next();
-        return { value: body(value), done: done };
+        return {
+            value: done ? undefined : body(value),
+            done: done
+        };
     }
 });
 exports.mapIterator = mapIterator;
