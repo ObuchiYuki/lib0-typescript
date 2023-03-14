@@ -25,7 +25,7 @@ export declare class Encoder {
     /**
      * Write one byte to the encoder.
      */
-    write1(value: number): void;
+    write(value: number): void;
     /**
      * Write one byte at a specific position.
      * Position must already be written (i.e. encoder.length > pos)
@@ -131,7 +131,7 @@ export declare class RleEncoder<T extends number> extends Encoder {
     state: T | null;
     count: number;
     constructor(writer: (encoder: Encoder, value: T) => void);
-    write(value: T): void;
+    writeValue(value: T): void;
 }
 /**
  * Basic diff decoder using variable length encoding.
@@ -141,7 +141,7 @@ export declare class RleEncoder<T extends number> extends Encoder {
 export declare class IntDiffEncoder extends Encoder {
     state: number;
     constructor(start: number);
-    write(value: number): void;
+    writeValue(value: number): void;
 }
 /**
  * A combination of IntDiffEncoder and RleEncoder.
@@ -154,7 +154,7 @@ export declare class RleIntDiffEncoder extends Encoder {
     state: number;
     count: number;
     constructor(start: number);
-    write(value: number): void;
+    writeValue(value: number): void;
 }
 /**
  * Optimized Rle encoder that does not suffer from the mentioned problem of the basic Rle encoder.

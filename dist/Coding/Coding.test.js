@@ -30,8 +30,8 @@ describe("Encoder.ts", () => {
     test("writeのデコード内容の比較", () => {
         const d1 = () => {
             const encoder = new Encoder_1.Encoder();
-            encoder.write1(2);
-            encoder.write1(10);
+            encoder.write(2);
+            encoder.write(10);
             return encoder.toUint8Array();
         };
         const d2 = () => {
@@ -130,8 +130,8 @@ describe("Encoder.ts", () => {
 describe("Decoder.ts", () => {
     test("writeのデコード内容の比較", () => {
         const encoder = new Encoder_1.Encoder();
-        encoder.write1(2);
-        encoder.write1(10);
+        encoder.write(2);
+        encoder.write(10);
         const decoder = new Decoder_1.Decoder(encoder.toUint8Array());
         expect(decoder.readUint8()).toBe(2);
         expect(decoder.readUint8()).toBe(10);

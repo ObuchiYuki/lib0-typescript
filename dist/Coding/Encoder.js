@@ -8,7 +8,7 @@ class Encoder {
         this.currentBuffer = new Uint8Array(100);
         this.currentBufferPosition = 0;
         /** Write one byte as an unsigned integer. */
-        this.writeUint8 = this.write1;
+        this.writeUint8 = this.write;
         /** Write one byte as an unsigned Integer at a specific location. */
         this.setUint8 = this.set;
     }
@@ -46,7 +46,7 @@ class Encoder {
     /**
      * Write one byte to the encoder.
      */
-    write1(value) {
+    write(value) {
         const bufferLen = this.currentBuffer.length;
         if (this.currentBufferPosition === bufferLen) {
             this.buffers.push(this.currentBuffer);
@@ -81,8 +81,8 @@ class Encoder {
     }
     /** Write two bytes as an unsigned integer. */
     writeUint16(value) {
-        this.write1(value & 255);
-        this.write1((value >>> 8) & 255);
+        this.write(value & 255);
+        this.write((value >>> 8) & 255);
     }
     /** Write two bytes as an unsigned integer at a specific location. */
     setUint16(position, value) {
@@ -92,14 +92,14 @@ class Encoder {
     /** Write two bytes as an unsigned integer */
     writeUint32(value) {
         for (let i = 0; i < 4; i++) {
-            this.write1(value & 255);
+            this.write(value & 255);
             value >>>= 8;
         }
     }
     /** Write two bytes as an unsigned integer in big endian order. */
     writeUint32BigEndian(value) {
         for (let i = 3; i >= 0; i--) {
-            this.write1((value >>> (8 * i)) & 255);
+            this.write((value >>> (8 * i)) & 255);
         }
     }
     /** Write two bytes as an unsigned integer at a specific location. */
@@ -112,10 +112,10 @@ class Encoder {
     /** Write a variable length unsigned integer. Max encodable integer is 2^53. */
     writeVarUint(value) {
         while (value > 127) {
-            this.write1(128 | (127 & value));
+            this.write(128 | (127 & value));
             value = Math.floor(value / 128); // shift >>> 7
         }
-        this.write1(127 & value);
+        this.write(127 & value);
     }
     /** Write a variable length integer. */
     writeVarInt(value) {
@@ -124,13 +124,13 @@ class Encoder {
             value = -value;
         }
         //        |- whether to continue reading (8th bit) |- whether is negative (7th bit) |- number (bottom 6bits)
-        this.write1((value > 63 ? 128 : 0) | (isNegative ? 64 : 0) | (63 & value));
+        this.write((value > 63 ? 128 : 0) | (isNegative ? 64 : 0) | (63 & value));
         value = Math.floor(value / 64); // shift >>> 6
         // We don't need to consider the case of num === 0 so we can use a different
         // pattern here than above.
         while (value > 0) {
             //        |- whether to continue reading (8th bit) |- number (bottom 7bits)
-            this.write1((value > 127 ? 128 : 0) | (127 & value));
+            this.write((value > 127 ? 128 : 0) | (127 & value));
             value = Math.floor(value / 128); // shift >>> 7
         }
     }
@@ -141,7 +141,7 @@ class Encoder {
             const written = Encoder._textEncoder.encodeInto(value, Encoder._strBuffer).written || 0;
             this.writeVarUint(written);
             for (let i = 0; i < written; i++) {
-                this.write1(Encoder._strBuffer[i]);
+                this.write(Encoder._strBuffer[i]);
             }
         }
         else {
@@ -252,39 +252,39 @@ class Encoder {
         switch (typeof data) {
             case 'string':
                 // TYPE 119: STRING
-                this.write1(119);
+                this.write(119);
                 this.writeVarString(data);
                 break;
             case 'number':
                 if (Number.isInteger(data) && Math.abs(data) <= 0x7FFFFFFF /* BITS31 */) {
                     // TYPE 125: INTEGER
-                    this.write1(125);
+                    this.write(125);
                     this.writeVarInt(data);
                 }
                 else if (this.isFloat32(data)) {
                     // TYPE 124: FLOAT32
-                    this.write1(124);
+                    this.write(124);
                     this.writeFloat32(data);
                 }
                 else {
                     // TYPE 123: FLOAT64
-                    this.write1(123);
+                    this.write(123);
                     this.writeFloat64(data);
                 }
                 break;
             case 'bigint':
                 // TYPE 122: BigInt
-                this.write1(122);
+                this.write(122);
                 this.writeBigInt64(data);
                 break;
             case 'object':
                 if (data === null) {
                     // TYPE 126: null
-                    this.write1(126);
+                    this.write(126);
                 }
                 else if (data instanceof Array) {
                     // TYPE 117: Array
-                    this.write1(117);
+                    this.write(117);
                     this.writeVarUint(data.length);
                     for (let i = 0; i < data.length; i++) {
                         this.writeAny(data[i]);
@@ -292,12 +292,12 @@ class Encoder {
                 }
                 else if (data instanceof Uint8Array) {
                     // TYPE 116: ArrayBuffer
-                    this.write1(116);
+                    this.write(116);
                     this.writeVarUint8Array(data);
                 }
                 else {
                     // TYPE 118: Object
-                    this.write1(118);
+                    this.write(118);
                     const keys = Object.keys(data);
                     this.writeVarUint(keys.length);
                     for (let i = 0; i < keys.length; i++) {
@@ -309,11 +309,11 @@ class Encoder {
                 break;
             case 'boolean':
                 // TYPE 120/121: boolean (true/false)
-                this.write1(data ? 120 : 121);
+                this.write(data ? 120 : 121);
                 break;
             default:
                 // TYPE 127: undefined
-                this.write1(127);
+                this.write(127);
         }
     }
     isNegative(n) {
@@ -350,7 +350,7 @@ class RleEncoder extends Encoder {
         this.count = 0;
         this.writer = writer;
     }
-    write(value) {
+    writeValue(value) {
         if (this.state === value) {
             this.count++;
         }
@@ -377,7 +377,7 @@ class IntDiffEncoder extends Encoder {
         super();
         this.state = start;
     }
-    write(value) {
+    writeValue(value) {
         this.writeVarInt(value - this.state);
         this.state = value;
     }
@@ -396,7 +396,7 @@ class RleIntDiffEncoder extends Encoder {
         this.count = 0;
         this.state = start;
     }
-    write(value) {
+    writeValue(value) {
         if (this.state === value && this.count > 0) {
             this.count++;
         }
