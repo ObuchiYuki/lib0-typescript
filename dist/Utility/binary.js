@@ -1,21 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BITS8 = exports.BITS7 = exports.BITS6 = exports.BITS5 = exports.BITS4 = exports.BITS3 = exports.BITS2 = exports.BITS1 = exports.BITS0 = exports.BIT8 = exports.BIT7 = exports.BIT6 = exports.BIT5 = exports.BIT4 = exports.BIT3 = exports.BIT2 = exports.BIT1 = void 0;
-exports.BIT1 = 1;
-exports.BIT2 = 2;
-exports.BIT3 = 4;
-exports.BIT4 = 8;
-exports.BIT5 = 16;
-exports.BIT6 = 32;
-exports.BIT7 = 64;
-exports.BIT8 = 128;
+exports.Bits = exports.Bit = void 0;
+var Bit;
+(function (Bit) {
+    Bit.n1 = 1;
+    Bit.n2 = 2;
+    Bit.n3 = 4;
+    Bit.n4 = 8;
+    Bit.n5 = 16;
+    Bit.n6 = 32;
+    Bit.n7 = 64;
+    Bit.n8 = 128;
+})(Bit = exports.Bit || (exports.Bit = {}));
 /** First n bits activated. */
-exports.BITS0 = 0;
-exports.BITS1 = 1;
-exports.BITS2 = 3;
-exports.BITS3 = 7;
-exports.BITS4 = 15;
-exports.BITS5 = 31;
-exports.BITS6 = 63;
-exports.BITS7 = 127;
-exports.BITS8 = 255;
+var Bits;
+(function (Bits) {
+    Bits.n0 = 0;
+    Bits.n1 = 1;
+    Bits.n2 = 3;
+    Bits.n3 = 7;
+    Bits.n4 = 15;
+    Bits.n5 = 31;
+    Bits.n6 = 63;
+    Bits.n7 = 127;
+    Bits.n8 = 255;
+})(Bits = exports.Bits || (exports.Bits = {}));
