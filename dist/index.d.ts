@@ -5,4 +5,5 @@ export * from "./Utility/isEqual";
 export * from "./Utility/binary";
 export * from "./Utility/iterator";
 export * from "./Utility/map";
+export * from "./Utility/callAll";
 export * from "./Utility/Error";

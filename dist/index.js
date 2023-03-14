@@ -21,4 +21,5 @@ __exportStar(require("./Utility/isEqual"), exports);
 __exportStar(require("./Utility/binary"), exports);
 __exportStar(require("./Utility/iterator"), exports);
 __exportStar(require("./Utility/map"), exports);
+__exportStar(require("./Utility/callAll"), exports);
 __exportStar(require("./Utility/Error"), exports);
