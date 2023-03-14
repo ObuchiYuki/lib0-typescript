@@ -1,4 +1,5 @@
 import { Codable } from "./Encoder"
+import { isNegative } from "./isNegative"
 
 const errorIntegerOutOfRange = new Error('Integer out of Range')
 const errorUnexpectedEndOfArray = new Error('Unexpected end of array')
@@ -296,8 +297,157 @@ export class Decoder {
             return undefined
         }
     }
+}
 
+export class RleDecoder<T extends number> extends Decoder {
 
-  
+    reader: (decoder: Decoder) => T
+    state: T | null = null
+    count = 0
+
+    constructor (uint8Array: Uint8Array, reader: (decoder: Decoder) => T) {
+        super(uint8Array)
+        this.reader = reader
+    }
+
+    read(): T {
+        if (this.count === 0) {
+            this.state = this.reader(this)
+            if (this.hasContent()) {
+                this.count = this.readVarUint() + 1 // see encoder implementation for the reason why this is incremented
+            } else {
+                this.count = -1 // read the current value forever
+            }
+        }
+        this.count--
+        return this.state!
+    }
 }
   
+export class IntDiffDecoder extends Decoder {
+
+    state: number
+    
+    constructor(uint8Array: Uint8Array, start: number) {
+        super(uint8Array)
+        this.state = start
+    }
+
+    read(): number {
+        this.state += this.readVarInt()
+        return this.state
+    }
+}
+  
+export class RleIntDiffDecoder extends Decoder {
+    state: number
+    count: number
+
+    constructor (uint8Array: Uint8Array, start: number) {
+        super(uint8Array)
+        this.state = start
+        this.count = 0
+    }
+
+    read(): number {
+        if (this.count === 0) {
+            this.state += this.readVarInt()
+            if (this.hasContent()) {
+                this.count = this.readVarUint() + 1 // see encoder implementation for the reason why this is incremented
+            } else {
+                this.count = -1 // read the current value forever
+            }
+        }
+        this.count--
+        return this.state
+    }
+}
+
+export class UintOptRleDecoder extends Decoder {
+    state: number = 0
+    count: number = 0
+
+    constructor(uint8Array: Uint8Array) {
+        super(uint8Array)
+    }
+
+    read(): number {
+        if (this.count === 0) {
+        this.state = this.readVarInt()
+        // if the sign is negative, we read the count too, otherwise count is 1
+        this.count = 1
+        if (isNegative(this.state)) {
+            this.state = -this.state
+            this.count = this.readVarUint() + 2
+        }
+        }
+        this.count--
+        return this.state
+    }
+}
+  
+export class IncUintOptRleDecoder extends Decoder {
+    state = 0
+    count = 0
+    constructor(uint8Array: Uint8Array) {
+        super(uint8Array)
+    }
+
+    read(): number {
+        if (this.count === 0) {
+            this.state = this.readVarInt()
+            // if the sign is negative, we read the count too, otherwise count is 1
+            this.count = 1
+            if (isNegative(this.state)) {
+                this.state = -this.state
+                this.count = this.readVarUint() + 2
+            }
+        }
+        this.count--
+        return this.state++
+    }
+}
+
+export class IntDiffOptRleDecoder extends Decoder {
+    state = 0
+    count = 0
+    diff = 0
+
+    constructor(uint8Array: Uint8Array) {
+        super(uint8Array)
+    }
+
+    read(): number {
+        if (this.count === 0) {
+            const diff = this.readVarInt()
+            // if the first bit is set, we read more data
+            const hasCount = diff & 1
+            this.diff = Math.floor(diff / 2) // shift >> 1
+            this.count = 1
+            if (hasCount) {
+                this.count = this.readVarUint() + 2
+            }
+        }
+        this.state += this.diff
+        this.count--
+        return this.state
+    }
+}
+  
+export class StringDecoder {
+    decoder: UintOptRleDecoder
+    str: string
+    spos: number = 0
+
+    constructor(uint8Array: Uint8Array) {
+        this.decoder = new UintOptRleDecoder(uint8Array)
+        this.str = this.decoder.readVarString()
+    }
+
+    read(): string {
+        const end = this.spos + this.decoder.read()
+        const res = this.str.slice(this.spos, end)
+        this.spos = end
+        return res
+    }
+}
