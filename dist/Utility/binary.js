@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BITS8 = exports.BITS7 = exports.BITS6 = exports.BITS5 = exports.BITS4 = exports.BITS3 = exports.BITS2 = exports.BITS1 = exports.BITS0 = exports.BIT8 = exports.BIT7 = exports.BIT6 = exports.BIT5 = exports.BIT4 = exports.BIT3 = exports.BIT2 = exports.BIT1 = void 0;
+exports.BIT1 = 1;
+exports.BIT2 = 2;
+exports.BIT3 = 4;
+exports.BIT4 = 8;
+exports.BIT5 = 16;
+exports.BIT6 = 32;
+exports.BIT7 = 64;
+exports.BIT8 = 128;
+/** First n bits activated. */
+exports.BITS0 = 0;
+exports.BITS1 = 1;
+exports.BITS2 = 3;
+exports.BITS3 = 7;
+exports.BITS4 = 15;
+exports.BITS5 = 31;
+exports.BITS6 = 63;
+exports.BITS7 = 127;
+exports.BITS8 = 255;
