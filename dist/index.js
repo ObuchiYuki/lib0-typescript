@@ -19,5 +19,5 @@ __exportStar(require("./Coding/Encoder"), exports);
 __exportStar(require("./Observable/Observable"), exports);
 __exportStar(require("./Utility/isEqual"), exports);
 __exportStar(require("./Utility/binary"), exports);
-__exportStar(require("./Utility/it"), exports);
+__exportStar(require("./Utility/setIfUndefined"), exports);
 __exportStar(require("./Utility/Error"), exports);
