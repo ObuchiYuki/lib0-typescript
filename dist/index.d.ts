@@ -3,4 +3,5 @@ export * from "./Coding/Encoder";
 export * from "./Observable/Observable";
 export * from "./Utility/isEqual";
 export * from "./Utility/binary";
-export * from "./Error";
+export * from "./Utility/it";
+export * from "./Utility/Error";
