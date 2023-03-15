@@ -8,5 +8,6 @@ export * from "./Utility/binary"
 export * from "./Utility/iterator"
 export * from "./Utility/map"
 export * from "./Utility/callAll"
+export * from "./Utility/random_uint32"
 
 export * from "./Utility/Error"
