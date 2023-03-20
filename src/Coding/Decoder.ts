@@ -10,7 +10,7 @@ export class Decoder {
     arr: Uint8Array
     pos: number = 0
 
-    constructor (uint8Array: Uint8Array) { this.arr = uint8Array }
+    constructor(uint8Array: Uint8Array) { this.arr = uint8Array }
 
     hasContent(): boolean {
         return this.pos !== this.arr.length
@@ -36,7 +36,7 @@ export class Decoder {
         return this.arr[this.pos++]
     }
 
-    readVarUint(): number{
+    readVarUint(): number {
         let num = 0
         let mult = 1
         const len = this.arr.length
@@ -104,7 +104,7 @@ export class Decoder {
     }
 
     readBigUint64() {
-        this.readFromDataView(8).getBigUint64(0, false)
+        return this.readFromDataView(8).getBigUint64(0, false)
     }
 
     readAny(): any {
@@ -176,7 +176,7 @@ export class IntDiffDecoder {
     decoder: Decoder
     state: number
 
-    constructor (uint8Array: Uint8Array, start: number) {
+    constructor(uint8Array: Uint8Array, start: number) {
         this.decoder = new Decoder(uint8Array)
         this.state = start
     }
@@ -245,7 +245,7 @@ export class IncUintOptRleDecoder {
         this.decoder = new Decoder(uint8Array)
     }
 
-    read () {
+    read() {
         if (this.count === 0) {
             this.state = this.decoder.readVarInt()
             // if the sign is negative, we read the count too, otherwise count is 1
@@ -271,9 +271,6 @@ export class IntDiffOptRleDecoder {
         this.decoder = new Decoder(uint8Array)
     }
 
-    /**
-     * @return {number}
-     */
     read (): number {
         if (this.count === 0) {
             const diff = this.decoder.readVarInt()

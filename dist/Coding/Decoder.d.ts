@@ -14,7 +14,7 @@ export declare class Decoder {
     readFloat32(): number;
     readFloat64(): number;
     readBigInt64(): bigint;
-    readBigUint64(): void;
+    readBigUint64(): bigint;
     readAny(): any;
 }
 export declare class RleDecoder<T extends number> {
@@ -58,9 +58,6 @@ export declare class IntDiffOptRleDecoder {
     count: number;
     diff: number;
     constructor(uint8Array: Uint8Array);
-    /**
-     * @return {number}
-     */
     read(): number;
 }
 export declare class StringDecoder {

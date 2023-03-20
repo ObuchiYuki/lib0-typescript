@@ -113,7 +113,7 @@ class Decoder {
         return this.readFromDataView(8).getBigInt64(0, false);
     }
     readBigUint64() {
-        this.readFromDataView(8).getBigUint64(0, false);
+        return this.readFromDataView(8).getBigUint64(0, false);
     }
     readAny() {
         const typeid = this.readUint8();
@@ -267,9 +267,6 @@ class IntDiffOptRleDecoder {
         this.diff = 0;
         this.decoder = new Decoder(uint8Array);
     }
-    /**
-     * @return {number}
-     */
     read() {
         if (this.count === 0) {
             const diff = this.decoder.readVarInt();

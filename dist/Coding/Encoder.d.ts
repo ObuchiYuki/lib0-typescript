@@ -70,6 +70,7 @@ export declare class IntDiffOptRleEncoder {
     constructor();
     write(v: number): void;
     toUint8Array(): Uint8Array;
+    flush(): void;
 }
 export declare class StringEncoder {
     sarr: string[];

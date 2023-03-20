@@ -358,19 +358,6 @@ export class IncUintOptRleEncoder {
     }
 }
 
-/**
- * @param {IntDiffOptRleEncoder} encoder
- */
-const flushIntDiffOptRleEncoder = (encoder: IntDiffOptRleEncoder) => {
-    if (encoder.count > 0) {
-        const encodedDiff = encoder.diff * 2 + (encoder.count === 1 ? 0 : 1)
-        encoder.encoder.writeVarInt(encodedDiff)
-        if (encoder.count > 1) {
-            encoder.encoder.writeVarUint(encoder.count - 2) 
-        }
-    }
-}
-
 export class IntDiffOptRleEncoder {
     encoder = new Encoder()
     s = 0
@@ -384,7 +371,7 @@ export class IntDiffOptRleEncoder {
             this.s = v
             this.count++
         } else {
-            flushIntDiffOptRleEncoder(this)
+            this.flush()
             this.count = 1
             this.diff = v - this.s
             this.s = v
@@ -392,8 +379,18 @@ export class IntDiffOptRleEncoder {
     }
 
     toUint8Array() {
-        flushIntDiffOptRleEncoder(this)
+        this.flush()
         return this.encoder.toUint8Array()
+    }
+
+    flush() {
+        if (this.count > 0) {
+            const encodedDiff = this.diff * 2 + (this.count === 1 ? 0 : 1)
+            this.encoder.writeVarInt(encodedDiff)
+            if (this.count > 1) {
+                this.encoder.writeVarUint(this.count - 2) 
+            }
+        }
     }
 }
 
