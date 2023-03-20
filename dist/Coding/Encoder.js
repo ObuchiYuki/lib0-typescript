@@ -354,8 +354,10 @@ class IntDiffOptRleEncoder {
         this.s = 0;
         this.count = 0;
         this.diff = 0;
+        this.mutated = false;
     }
     write(v) {
+        this.mutated = true;
         if (this.diff === v - this.s) {
             this.s = v;
             this.count++;
@@ -368,7 +370,10 @@ class IntDiffOptRleEncoder {
         }
     }
     toUint8Array() {
-        this.flush();
+        if (this.mutated) {
+            this.flush();
+            this.mutated = false;
+        }
         return this.encoder.toUint8Array();
     }
     flush() {

@@ -363,10 +363,12 @@ export class IntDiffOptRleEncoder {
     s = 0
     count = 0
     diff = 0
+    mutated = false
 
     constructor () {}
 
     write(v: number) {
+        this.mutated = true
         if (this.diff === v - this.s) {
             this.s = v
             this.count++
@@ -379,7 +381,10 @@ export class IntDiffOptRleEncoder {
     }
 
     toUint8Array() {
-        this.flush()
+        if (this.mutated) {
+            this.flush()
+            this.mutated = false
+        } 
         return this.encoder.toUint8Array()
     }
 

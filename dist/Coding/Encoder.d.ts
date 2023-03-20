@@ -67,6 +67,7 @@ export declare class IntDiffOptRleEncoder {
     s: number;
     count: number;
     diff: number;
+    mutated: boolean;
     constructor();
     write(v: number): void;
     toUint8Array(): Uint8Array;
