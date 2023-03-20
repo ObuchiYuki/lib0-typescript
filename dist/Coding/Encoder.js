@@ -325,6 +325,7 @@ class UintOptRleEncoder {
     toUint8Array() {
         if (this.mutated) {
             flushUintOptRleEncoder(this);
+            this.mutated = false;
         }
         return this.encoder.toUint8Array();
     }
@@ -351,6 +352,7 @@ class IncUintOptRleEncoder {
     toUint8Array() {
         if (this.mutated) {
             flushUintOptRleEncoder(this);
+            this.mutated = false;
         }
         return this.encoder.toUint8Array();
     }
