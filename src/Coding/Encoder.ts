@@ -316,10 +316,12 @@ export class UintOptRleEncoder {
     encoder = new Encoder()
     s = 0
     count = 0
+    mutated = false
 
-    constructor () {    }
+    constructor () {}
 
     write(v: number) {
+        this.mutated = true
         if (this.s === v) {
             this.count++
         } else {
@@ -330,7 +332,9 @@ export class UintOptRleEncoder {
     }
 
     toUint8Array () {
-        flushUintOptRleEncoder(this)
+        if (this.mutated) {
+            flushUintOptRleEncoder(this)
+        }
         return this.encoder.toUint8Array()
     }
 }
@@ -339,10 +343,12 @@ export class IncUintOptRleEncoder {
     encoder = new Encoder()
     s = 0
     count = 0
+    mutated = false
     
     constructor () {}
 
     write(v: number) {
+        this.mutated = true
         if (this.s + this.count === v) {
             this.count++
         } else {
@@ -353,7 +359,9 @@ export class IncUintOptRleEncoder {
     }
 
     toUint8Array () {
-        flushUintOptRleEncoder(this)
+        if (this.mutated) {
+            flushUintOptRleEncoder(this)
+        }
         return this.encoder.toUint8Array()
     }
 }
@@ -403,10 +411,12 @@ export class StringEncoder {
     sarr: string[] = []
     s = ''
     lensE = new UintOptRleEncoder()
+    mutated = false
 
     constructor () {}
 
     write(string: string) {
+        this.mutated = true
         this.s += string
         if (this.s.length > 19) {
             this.sarr.push(this.s)

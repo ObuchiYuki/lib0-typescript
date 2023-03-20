@@ -50,6 +50,7 @@ export declare class UintOptRleEncoder {
     encoder: Encoder;
     s: number;
     count: number;
+    mutated: boolean;
     constructor();
     write(v: number): void;
     toUint8Array(): Uint8Array;
@@ -58,6 +59,7 @@ export declare class IncUintOptRleEncoder {
     encoder: Encoder;
     s: number;
     count: number;
+    mutated: boolean;
     constructor();
     write(v: number): void;
     toUint8Array(): Uint8Array;
@@ -77,6 +79,7 @@ export declare class StringEncoder {
     sarr: string[];
     s: string;
     lensE: UintOptRleEncoder;
+    mutated: boolean;
     constructor();
     write(string: string): void;
     toUint8Array(): Uint8Array;

@@ -309,8 +309,10 @@ class UintOptRleEncoder {
         this.encoder = new Encoder();
         this.s = 0;
         this.count = 0;
+        this.mutated = false;
     }
     write(v) {
+        this.mutated = true;
         if (this.s === v) {
             this.count++;
         }
@@ -321,7 +323,9 @@ class UintOptRleEncoder {
         }
     }
     toUint8Array() {
-        flushUintOptRleEncoder(this);
+        if (this.mutated) {
+            flushUintOptRleEncoder(this);
+        }
         return this.encoder.toUint8Array();
     }
 }
@@ -331,8 +335,10 @@ class IncUintOptRleEncoder {
         this.encoder = new Encoder();
         this.s = 0;
         this.count = 0;
+        this.mutated = false;
     }
     write(v) {
+        this.mutated = true;
         if (this.s + this.count === v) {
             this.count++;
         }
@@ -343,7 +349,9 @@ class IncUintOptRleEncoder {
         }
     }
     toUint8Array() {
-        flushUintOptRleEncoder(this);
+        if (this.mutated) {
+            flushUintOptRleEncoder(this);
+        }
         return this.encoder.toUint8Array();
     }
 }
@@ -392,8 +400,10 @@ class StringEncoder {
         this.sarr = [];
         this.s = '';
         this.lensE = new UintOptRleEncoder();
+        this.mutated = false;
     }
     write(string) {
+        this.mutated = true;
         this.s += string;
         if (this.s.length > 19) {
             this.sarr.push(this.s);
